@@ -1,0 +1,61 @@
+// Fire Fighting Robot using Arduino UNO
+// Components: Flame Sensor, L298N Motor Driver, Fan (or Pump)
+
+// Motor pins (L298N IN1, IN2, IN3, IN4)
+#define motorLeft1  2
+#define motorLeft2  3
+#define motorRight1 4
+#define motorRight2 5
+
+// Fan (extinguisher) pin
+#define fan 6    
+
+// Flame sensor pin
+#define flame A0   
+
+int flameValue = 0;
+int threshold = 400;   // Adjust based on your sensor readings
+
+void setup() {
+  pinMode(motorLeft1, OUTPUT);
+  pinMode(motorLeft2, OUTPUT);
+  pinMode(motorRight1, OUTPUT);
+  pinMode(motorRight2, OUTPUT);
+  pinMode(fan, OUTPUT);
+  pinMode(flame, INPUT);
+
+  Serial.begin(9600);
+  Serial.println("Fire Fighting Robot Ready!");
+}
+
+void loop() {
+  flameValue = analogRead(flame);
+  Serial.print("Flame Sensor Value: ");
+  Serial.println(flameValue);
+
+  if (flameValue < threshold) {  
+    // Fire detected
+    Serial.println("🔥 Fire Detected! Extinguishing...");
+    stopMotors();       // Stop robot near fire
+    digitalWrite(fan, HIGH);  // Turn ON fan to extinguish
+    delay(3000);        // Keep fan running for 3 sec
+    digitalWrite(fan, LOW);   // Turn OFF fan
+  } else {
+    // No fire → Keep moving forward
+    moveForward();
+  }
+}
+
+void moveForward() {
+  digitalWrite(motorLeft1, HIGH);
+  digitalWrite(motorLeft2, LOW);
+  digitalWrite(motorRight1, HIGH);
+  digitalWrite(motorRight2, LOW);
+}
+
+void stopMotors() {
+  digitalWrite(motorLeft1, LOW);
+  digitalWrite(motorLeft2, LOW);
+  digitalWrite(motorRight1, LOW);
+  digitalWrite(motorRight2, LOW);
+}
